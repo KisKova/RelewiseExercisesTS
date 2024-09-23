@@ -3,8 +3,6 @@ import { ProductData } from './productData';
 import { ProductUpdateBuilder } from '@relewise/integrations';
 import { Product } from '@relewise/client';
 
-// JSON Product data mapper
-
 export class ProductJob {
   async execute(): Promise<string> {
     try {
