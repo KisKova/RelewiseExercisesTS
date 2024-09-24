@@ -2,7 +2,7 @@ import axios from 'axios';
 import { ProductData } from './productData';
 import { parseStringPromise } from 'xml2js';
 import { ProductUpdateBuilder } from '@relewise/integrations';
-import { Product } from '@relewise/client';
+import { ProductUpdate } from '@relewise/client';
 
 export class JsonProductJob {
   async execute(): Promise<string> {
@@ -12,7 +12,7 @@ export class JsonProductJob {
 
       const productData: ProductData[] = response.data;
 
-      const relewiseProducts: Product[] = productData.map((product) =>
+      const relewiseProducts: ProductUpdate[] = productData.map((product) =>
         this.mapToRelewiseProduct(product)
       );
 
@@ -24,7 +24,7 @@ export class JsonProductJob {
     }
   }
 
-  private mapToRelewiseProduct(product: ProductData): Product {
+  private mapToRelewiseProduct(product: ProductData): ProductUpdate {
     const english = 'en';
     const usd = 'USD';
 
@@ -43,7 +43,7 @@ export class JsonProductJob {
       .salesPrice([{ currency: usd, amount: this.parsePrice(product.salesPrice) }])
       .listPrice([{ currency: usd, amount: this.parsePrice(product.listPrice) }]);
 
-    return productBuilder.build() as unknown as Product;
+    return productBuilder.build();
   }
 
   private parsePrice(price: string): number {
@@ -64,7 +64,7 @@ export class GoogleShoppingProductJob {
 
       const items = parsedXml.rss.channel.item;
 
-      const mappedProducts: Product[] = [];
+      const mappedProducts: ProductUpdate[] = [];
       const english = 'en';
       const usd = 'USD';
 
@@ -85,7 +85,7 @@ export class GoogleShoppingProductJob {
             .listPrice([{ currency: usd, amount: this.parsePrice(price) }])
             .salesPrice([{ currency: usd, amount: this.parsePrice(salePrice) }]);
 
-          const product = productBuilder.build() as unknown as Product;
+          const product = productBuilder.build();
           mappedProducts.push(product);
         }
       }
@@ -113,7 +113,7 @@ export class RawProductDataJob {
       const rawData = response.data;
 
       const lines = rawData.split(/\r?\n/);
-      const mappedProducts: Product[] = [];
+      const mappedProducts: ProductUpdate[] = [];
       const english = 'en';
       const usd = 'USD';
 
@@ -137,7 +137,7 @@ export class RawProductDataJob {
             .listPrice([{ currency: usd, amount: this.parsePrice(listPrice) }])
             .salesPrice([{ currency: usd, amount: this.parsePrice(salesPrice) }]);
 
-          const product = productBuilder.build() as unknown as Product;
+          const product = productBuilder.build();
           mappedProducts.push(product);
         }
       }
